@@ -1,0 +1,13 @@
+[project]
+name = "cvis"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "networkx~=3.4.2",
+    "numpy~=2.1.3",
+    "s-dbw==0.4.0",
+    "scikit-learn~=1.5.2",
+    "scipy~=1.14.1",
+]
