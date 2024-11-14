@@ -89,10 +89,6 @@ class BaseMeasure(abc.ABC):
 
     def score_norm_(self, data: np.ndarray, labels: np.ndarray, **kwargs) -> float:
         worst_value = self.worst_value
-        """if worst_value == -np.inf:
-            worst_value=-99999999999999999999
-        if worst_value == np.inf:
-            worst_value=99999999999999999999"""
         if not self.check_valid(labels):
             return worst_value
         if self.needs_quadratic:
@@ -109,10 +105,7 @@ class BaseMeasure(abc.ABC):
         elif "dists" in args:
             kwargs_out["dists"] = data
         kwargs_out["labels"] = labels
-        # start=time.time()
-        # print(f"Start {self.name}")
         res = self.function_norm(**kwargs_out)
-        # print(f"Finished {self.name} in {time.time()-start:.2f}")
         if not self.less_is_better:
             ret = res * share
         else:
@@ -128,7 +121,6 @@ class BaseMeasure(abc.ABC):
             res = self.score_norm_(data, labels, **kwargs_out)
         else:
             res = self.score(data, labels, **kwargs)
-            # print(f"Unnormal result for {self.name} is {res}")
             if not (np.isinf(self.worst_value) or np.isinf(self.best_value)):
                 res = -1 + (((res - self.worst_value) * 2) / (self.best_value - self.worst_value))
             else:
@@ -167,14 +159,12 @@ class BaseMeasure(abc.ABC):
 
     def score_max(self, data: np.ndarray, labels: np.ndarray, **kwargs) -> float:
         orig_score = self.score(data, labels, **kwargs)
-        # orig_score = self.ensure_finite(orig_score)
         if self.less_is_better:
             return -orig_score
         return orig_score
 
     def score_min(self, data: np.ndarray, labels: np.ndarray, **kwargs) -> float:
         orig_score = self.score(data, labels, **kwargs)
-        # orig_score = self.ensure_finite(orig_score)
         if not self.less_is_better:
             return -orig_score
         return orig_score
@@ -216,10 +206,7 @@ class BaseMeasure(abc.ABC):
             elif "dists" in args:
                 kwargs_out["dists"] = dists
             kwargs_out["labels"] = labels
-            # start=time.time()
-            # print(f"Start {self.name}")
             res = self.function(**kwargs_out)
-            # print(f"Finished {self.name} in {time.time()-start:.2f}")
             if not self.less_is_better:
                 ret = res * share
             else:
@@ -231,14 +218,12 @@ class BaseMeasure(abc.ABC):
 
     def score_distance_function_max(self, data: np.ndarray, labels: np.ndarray, **kwargs) -> float:
         orig_score = self.score_distance_function(data, labels, **kwargs)
-        # orig_score = self.ensure_finite(orig_score)
         if self.less_is_better:
             return -orig_score
         return orig_score
 
     def score_distance_function_min(self, data: np.ndarray, labels: np.ndarray, **kwargs) -> float:
         orig_score = self.score_distance_function(data, labels, **kwargs)
-        # orig_score = self.ensure_finite(orig_score)
         if not self.less_is_better:
             return -orig_score
         return orig_score

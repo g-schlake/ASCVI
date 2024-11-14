@@ -39,10 +39,7 @@ class DSI(base_measure.BaseMeasure):
             kwargs_out[kw] = kwargs[kw]
         kwargs_out["dists"] = data
         kwargs_out["labels"] = labels
-        # start=time.time()
-        # print(f"Start {self.name}")
         res = dsi_dist(**kwargs_out)
-        # print(f"Finished {self.name} in {time.time()-start:.2f}")
         ret = res * share
         ret = self.ensure_finite(ret)
         return ret

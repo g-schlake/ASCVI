@@ -19,3 +19,4 @@ An example usage can be seen in `main.py`.
 The `dataset_fetcher` in the `auxiliaries` folder retrieves our toy datasets from scikit-learn as well as the 
 synthetic and real datasets from the [clustering datasets repository](https://github.com/milaan9/Clustering-Datasets).
 We adopted some of these datasets slightly to make them compatible with our program. 
+The Repo was tested with Python 3.10.

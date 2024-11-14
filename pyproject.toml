@@ -1,9 +1,9 @@
 [project]
-name = "cvis"
+name = "ASCVI"
 version = "0.1.0"
-description = "Add your description here"
+description = "A collection of CVI for clusterings containing arbitrary shaped data"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.10"
 dependencies = [
     "networkx~=3.4.2",
     "numpy~=2.1.3",

@@ -1,16 +1,13 @@
-import csv
 import warnings
 from copy import copy
 
 import numpy as np
-from scipy.sparse.csgraph import minimum_spanning_tree
 from sklearn.metrics import pairwise_distances
 
 
 def dbcv(data, partition, outlier_cluster=-1):
     partition = copy(partition)
     clusters = np.unique(partition)
-    # This information is rather hidden in the Paper
     dist = np.power(pairwise_distances(data), 2)
     for cluster in clusters:
         if np.count_nonzero(partition == cluster) == 1:
@@ -20,7 +17,6 @@ def dbcv(data, partition, outlier_cluster=-1):
     if len(clusters) <= 1:
         return 0
     data = data[partition != outlier_cluster, :]
-    # Here, some equal points have a nonzero distance in the MatLab/Octave implementation
     dist = dist[partition != outlier_cluster, :][:, partition != outlier_cluster]
     poriginal = partition
     partition = partition[partition != outlier_cluster]
@@ -54,11 +50,6 @@ def dbcv(data, partition, outlier_cluster=-1):
     pairwise_distance = dist[:, :, np.newaxis]
     mutual_reachability_distance_matrix = np.concatenate([core_dists_i, core_dists_j, pairwise_distance], axis=-1)
     sep_point = np.max(mutual_reachability_distance_matrix, axis=-1)
-    """sep_point = np.zeros((nobjects,nobjects))
-    for i in range(nobjects-1):
-        for j in range(nobjects):
-            sep_point[i,j]= np.max([dist[i,j], d_ucore_cl[i], d_ucore_cl[j]])
-            sep_point[j,i] = sep_point[i,j]"""
     valid = 0
     sepcl = np.full((nclusters), np.inf)
     for i in range(nclusters):
@@ -153,10 +144,7 @@ def dbcv_dist_matrix(dist, partition, n_features,
         d_ucore_cl[objcl], mr = matrix_mutual_reachability_distance(nuobjcl, dist[objcl, :][:, objcl], nfeatures)
         G = {"no_vertices": nuobjcl, "MST_edges": np.zeros((nuobjcl - 1, 3)),
              "MST_degrees": np.zeros((nuobjcl), dtype=int), "MST_parent": np.zeros((nuobjcl), dtype=int)}
-        if own_mst_implementation:
-            Edges, Degrees = MST_Edges(G, 0, mr)
-        else:
-            Edges, Degrees = MST_Edges_alt(G, 0, mr)
+        Edges, Degrees = MST_Edges(G, 0, mr)
         int_node = np.where(Degrees != 1)[0]
         int_edg1 = np.where(np.in1d(Edges[:, 0], int_node))[0]
         int_edg2 = np.where(np.in1d(Edges[:, 1], int_node))[0]
@@ -174,11 +162,6 @@ def dbcv_dist_matrix(dist, partition, n_features,
     pairwise_distance = dist[:, :, np.newaxis]
     mutual_reachability_distance_matrix = np.concatenate([core_dists_i, core_dists_j, pairwise_distance], axis=-1)
     sep_point = np.max(mutual_reachability_distance_matrix, axis=-1)
-    """sep_point = np.zeros((nobjects,nobjects))
-    for i in range(nobjects-1):
-        for j in range(nobjects):
-            sep_point[i,j]= np.max([dist[i,j], d_ucore_cl[i], d_ucore_cl[j]])
-            sep_point[j,i] = sep_point[i,j]"""
     valid = 0
     sepcl = np.full((nclusters), np.Inf)
     for i in range(nclusters):
@@ -196,7 +179,6 @@ def dbcv_dist_matrix(dist, partition, n_features,
 
 def dbcv_clusterwise(dist, partition, n_features, outlier_cluster=-1):
     clusters = np.unique(partition)
-    # This information is rather hidden in the Paper
     for cluster in clusters:
         if np.count_nonzero(partition == cluster) == 1:
             partition[partition == cluster] = outlier_cluster
@@ -204,7 +186,6 @@ def dbcv_clusterwise(dist, partition, n_features, outlier_cluster=-1):
     clusters = clusters[clusters != outlier_cluster]
     if len(clusters) <= 1:
         return 0
-    # Here, some equal points have a nonzero distance in the MatLab/Octave implementation
     dist = dist[partition != outlier_cluster, :][:, partition != outlier_cluster]
     partition = partition[partition != outlier_cluster]
     nclusters = len(clusters)

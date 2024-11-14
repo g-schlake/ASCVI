@@ -41,10 +41,7 @@ class CDR_Index(base_measure.BaseMeasure):
         kwargs_out["X"] = data
         kwargs_out["labels"] = labels
         kwargs_out["distance"] = "precomputed"
-        # start=time.time()
-        # print(f"Start {self.name}")
         res = self.function(**kwargs_out)
-        # print(f"Finished {self.name} in {time.time()-start:.2f}")
         ret = res * share
         ret = self.ensure_finite(ret)
         return ret
@@ -79,10 +76,7 @@ class CDR_Index_not_averaged(base_measure.BaseMeasure):
         kwargs_out["X"] = data
         kwargs_out["labels"] = labels
         kwargs_out["distance"] = "precomputed"
-        # start=time.time()
-        # print(f"Start {self.name}")
         res = self.function(**kwargs_out)
-        # print(f"Finished {self.name} in {time.time()-start:.2f}")
         ret = res * share
         ret = self.ensure_finite(ret)
         return ret

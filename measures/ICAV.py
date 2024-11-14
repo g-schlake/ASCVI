@@ -88,12 +88,7 @@ def ic_av_cluster(dists, labels):
 
 
 # @timed
-def ic_av(dists, labels, numba=True):
-    """
-    :param dists: Data
-    :param labels: labels
-    :return:
-    """
+def ic_av(dists, labels):
     meds = MEDs(dists, labels)
     clusters = [x for x in np.unique(labels) if x != -1]
     ic_av = 0
@@ -135,15 +130,6 @@ def worker(n, G, results):
 def parallel_bottleneck_paths(G, num_workers):
     manager = multiprocessing.Manager()
     results = manager.list()
-    """
-    processes = []
-    for n in G:
-        p = multiprocessing.Process(target=worker, args=(n, G, results))
-        processes.append(p)
-        p.start()
-
-    for p in processes:
-        p.join()"""
     with multiprocessing.Pool(processes=num_workers) as pool:
         pool.starmap(worker, [(n, G, results) for n in G])
     return list(results)

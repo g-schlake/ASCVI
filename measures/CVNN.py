@@ -65,10 +65,7 @@ class CVNN_halkidi(base_measure.BaseMeasure):
         data, labels, share = self.clean_outliers(data, labels)
         if not self.check_valid(labels):
             return self.worst_value
-        # start=time.time()
-        # print(f"Start {self.name}")
         res = cvnn_halkidi_dist(data, labels, k)
-        # print(f"Finished {self.name} in {time.time()-start:.2f}")
         ret = res * share
         ret = self.ensure_finite(ret)
         return ret
