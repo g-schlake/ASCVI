@@ -48,39 +48,18 @@ class DSI(base_measure.BaseMeasure):
         return ret
 
 
-def dists(data, dist_func=distance.euclidean):  # compute ICD
-    num = data.shape[0]
-    data = data.reshape((num, -1))
-    dist = []
-    for i in range(0, num - 1):
-        for j in range(i + 1, num):
-            dist.append(dist_func(data[i], data[j]))
-    return np.array(dist)
-
-
-def dist_btw(a, b, dist_func=distance.euclidean):  # compute BCD
-    a = a.reshape((a.shape[0], -1))
-    b = b.reshape((b.shape[0], -1))
-    dist = []
-    for i in range(a.shape[0]):
-        for j in range(b.shape[0]):
-            dist.append(dist_func(a[i], b[j]))
-    return np.array(dist)
-
-
 def dsi_function(X, labels):
     return dsi_dist(pairwise_distances(X), labels)
 
 
 def dsi_clusters(X, labels):  # KS test on ICD and BCD
+    dists = pairwise_distances(X)
     classes = np.unique(labels)
     ret = {}
     for c in classes:
-        pos = X[np.squeeze(labels == c)]
-        neg = X[np.squeeze(labels != c)]
-
-        dist_pos = dists(pos)
-        distbtw = dist_btw(pos, neg)
+        dist_pos = dists[labels == c, :][:, labels == c]
+        dist_pos = dist_pos[np.triu_indices_from(dist_pos, 1)]
+        distbtw = np.reshape(dists[labels == c, :][:, labels != c], (-1))
         if dist_pos.size == 0:
             continue
         D, _ = ks_2samp(dist_pos, distbtw)  # KS test
@@ -101,5 +80,3 @@ def dsi_dist(dists, labels):
         SUM += D
     SUM = SUM / classes.shape[0]  # normed: b/c ks_2samp ranges [0,1]
     return SUM
-
-

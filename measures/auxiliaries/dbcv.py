@@ -7,7 +7,7 @@ from scipy.sparse.csgraph import minimum_spanning_tree
 from sklearn.metrics import pairwise_distances
 
 
-def rebuild_dbcv(data, partition, outlier_cluster=-1):
+def dbcv(data, partition, outlier_cluster=-1):
     partition = copy(partition)
     clusters = np.unique(partition)
     # This information is rather hidden in the Paper
@@ -60,9 +60,9 @@ def rebuild_dbcv(data, partition, outlier_cluster=-1):
             sep_point[i,j]= np.max([dist[i,j], d_ucore_cl[i], d_ucore_cl[j]])
             sep_point[j,i] = sep_point[i,j]"""
     valid = 0
-    sepcl = np.full((nclusters), np.Inf)
+    sepcl = np.full((nclusters), np.inf)
     for i in range(nclusters):
-        sep = np.full((nclusters), np.Inf)
+        sep = np.full((nclusters), np.inf)
         for j in range(nclusters):
             if i == j:
                 continue

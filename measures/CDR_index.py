@@ -125,14 +125,12 @@ def cdr_clusters(X, labels, distance="precomputed", avg=True):
     else:
         distances = X.copy()
     np.fill_diagonal(distances, np.inf)
-    CDR = 0
     ret = {}
     for cluster in unique_labels:
         if cluster == -1:
             continue
         cluster_points = np.where(labels == cluster)[0]
         cluster_size = len(cluster_points)
-        uniformity = 0
         if cluster_size > 1:
             inner_cluster_distances = distances[cluster_points, :][:, cluster_points]
             local_densities = np.min(inner_cluster_distances, axis=0)

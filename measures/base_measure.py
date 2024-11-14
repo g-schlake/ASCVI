@@ -73,16 +73,13 @@ class BaseMeasure(abc.ABC):
         kwargs_out = deepcopy(self.kwargs)
         for kw in kwargs:
             kwargs_out[kw] = kwargs[kw]
-        args = inspect.getfullargspec(self.function).args
+        args = [param.name for param in inspect.signature(self.function).parameters.values() if param.kind == param.POSITIONAL_OR_KEYWORD]
         if "X" in args:
             kwargs_out["X"] = data
         elif "dists" in args:
             kwargs_out["dists"] = data
         kwargs_out["labels"] = labels
-        # start=time.time()
-        # print(f"Start {self.name}")
         res = self.function(**kwargs_out)
-        # print(f"Finished {self.name} in {time.time()-start:.2f}")
         if not self.less_is_better:
             ret = res * share
         else:
@@ -106,7 +103,7 @@ class BaseMeasure(abc.ABC):
         kwargs_out = deepcopy(self.kwargs)
         for kw in kwargs:
             kwargs_out[kw] = kwargs[kw]
-        args = inspect.getfullargspec(self.function_norm).args
+        args = [param.name for param in inspect.signature(self.function).parameters.values() if param.kind == param.POSITIONAL_OR_KEYWORD]
         if "X" in args:
             kwargs_out["X"] = data
         elif "dists" in args:
@@ -150,7 +147,8 @@ class BaseMeasure(abc.ABC):
         kwargs_out = deepcopy(self.kwargs)
         for kw in kwargs:
             kwargs_out[kw] = kwargs[kw]
-        if "dim" in inspect.getfullargspec(self.function).args and data.shape[0] != data.shape[1]:
+        args = [param.name for param in inspect.signature(self.function).parameters.values() if param.kind == param.POSITIONAL_OR_KEYWORD]
+        if "dim" in args and data.shape[0] != data.shape[1]:
             kwargs_out["dim"] = data.shape[1]
         if self.function_clusters == NotImplementedError:
             raise NotImplementedError(f"No score per cluster implemented for {self.name}")

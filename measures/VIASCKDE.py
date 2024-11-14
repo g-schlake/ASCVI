@@ -38,7 +38,7 @@ class VIASCKDE_cw(base_measure.BaseMeasure):
 
     def __init__(self):
         super().__init__()
-        self.name = "VIASCKDE"
+        self.name = "VIASCKDE_cw"
         self.worst_value = -1
         self.function = viasckde_cw
         self.kwargs = {}
@@ -64,8 +64,7 @@ def fit_kernel(X, krnl, b_width):
 
 def viasckde(X, labels, krnl='gaussian', b_width=None):
     num_k = np.unique(labels)
-    iso = fit_kernel(X, krnl, b_width,
-                     dir=os.path.join("cache", "KDE", (hash_fit("KDE", X, kernel=krnl, b_width=b_width))))
+    iso = fit_kernel(X, krnl, b_width)
     ASC = np.array([])
     numC = np.array([])
     CoSeD = np.array([])
@@ -114,7 +113,7 @@ def viasckde_cw(X, labels, krnl='gaussian', b_width=0.05):
         for i in num_k:
             data_of_cluster = X[labels == i]
             data_of_not_its = X[labels != i]
-            if len(labels == i) > 1:
+            if len([labels == i]) > 1:
                 kde = KernelDensity(kernel=krnl, bandwidth=b_width).fit(data_of_cluster)
                 isos = kde.score_samples(data_of_cluster)
                 if max(isos) != min(isos):

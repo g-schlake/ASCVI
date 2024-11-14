@@ -2,7 +2,6 @@ import numpy as np
 from sklearn.metrics import pairwise_distances
 from sklearn.neighbors import NearestNeighbors
 
-from auxiliaries.decorators import cache_score
 from measures import base_measure
 
 
@@ -60,7 +59,6 @@ class CVNN_halkidi(base_measure.BaseMeasure):
         self.needs_quadratic = False
         self.less_is_better = True
 
-    @cache_score
     def score_distance_function(self, data, labels, k=None, **kwargs):
         if not self.check_valid(labels):
             return self.worst_value
