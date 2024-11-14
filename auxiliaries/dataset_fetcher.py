@@ -1,87 +1,10 @@
-import csv
 import os
 
 import numpy as np
 import scipy.io
 from sklearn import datasets
+import arff
 
-def fetch_datasets_dbcv():
-    datasets = {}
-    base_directory = os.path.dirname(os.path.realpath(__file__))
-    with open(os.path.join(base_directory, "datasets", "iris.data")) as iris_file:
-        iris_labels = []
-        iris_points = []
-        for row in csv.reader(iris_file):
-            if len(row) == 0:
-                continue
-            iris_points.append([float(row[0]), float(row[1]), float(row[2]), float(row[3])])
-            if row[4] == "Iris-setosa":
-                iris_labels.append(0)
-            elif row[4] == "Iris-versicolor":
-                iris_labels.append(1)
-            else:
-                iris_labels.append(2)
-    datasets["iris"] = {"data": iris_points, "labels": iris_labels}
-    with open(os.path.join(base_directory, "datasets", "wine.data")) as wine_file:
-        wine_labels = []
-        wine_points = []
-        for row in csv.reader(wine_file):
-            if not row: continue
-            wine_labels.append(int(row[0]))
-            a = list(map(float, row[1:13]))
-            wine_points.append(a)
-    datasets["wine"] = {"data": wine_points, "labels": wine_labels}
-    with open(os.path.join(base_directory, "datasets", "glass.data")) as glass_file:
-        glass_labels = []
-        glass_points = []
-        for row in csv.reader(glass_file):
-            if not row: continue
-            glass_labels.append(int(row[10]))
-            a = list(map(float, row[2:9]))
-            glass_points.append(a)
-    datasets["glass"] = {"data": glass_points, "labels": glass_labels}
-    with open(os.path.join(base_directory, "datasets", "synthetic_control.data")) as kdd_file:
-        kdd_labels = []
-        kdd_points = []
-        idx = 0
-        for row in csv.reader(kdd_file, delimiter=' '):
-            kdd_labels.append(int(idx / 100))
-            row = list(filter(lambda item: item != '', row))
-            idx += 1
-            if not row: continue
-            a = list(map(float, row))
-            kdd_points.append(a)
-    datasets["kdd"] = {"data": kdd_points, "labels": kdd_labels}
-    with open(os.path.join(base_directory, "datasets", "cell237.txt")) as cell237_file:
-        cell237_labels = []
-        cell237_points = []
-        first = True
-        for row in csv.reader(cell237_file, delimiter='\t'):
-            if first:
-                first = False
-                continue
-            if not row: continue
-            cell237_labels.append(int(row[1]))
-            a = list(map(float, row[2:18]))
-            cell237_points.append(a)
-    datasets["cell237"] = {"data": cell237_points, "labels": cell237_labels}
-    with open(os.path.join(base_directory, "datasets", "cell384.txt")) as cell384_file:
-        cell384_labels = []
-        cell384_points = []
-        first = True
-        for row in csv.reader(cell384_file, delimiter='\t'):
-            if first:
-                first = False
-                continue
-            if not row: continue
-            cell384_labels.append(int(row[1]))
-            a = list(map(float, row[2:18]))
-            cell384_points.append(a)
-    datasets["cell384"] = {"data": cell384_points, "labels": cell384_labels}
-    for name, dataset in datasets.items():
-        data, labels = clean(dataset["data"], dataset["labels"])
-        datasets[name] = {"data": data, "labels": labels}
-    return datasets
 
 def fetch_datasets_sklearn(n_samples=500):
     dataset = {}
@@ -104,7 +27,6 @@ def fetch_datasets_sklearn(n_samples=500):
 
 
 def fetch_datasets_cd_synthetic():
-    import arff
     evaluations_directory = os.path.dirname(os.path.realpath(__file__))
     other_outlier = {"zelnik2": 2, "cure-t2-4k": 6}
     folder = os.path.join(evaluations_directory, "Clustering-Datasets", "02. Synthetic")
@@ -144,15 +66,18 @@ def fetch_datasets_cd_synthetic():
                     try:
                         labels.append(int(ls[claspos]))
                     except ValueError:
-                        # print("Dataset "+dataset_name+" has Labels not direchtly castable "+str(ls[claspos]))
+                        print("Dataset "+dataset_name+" has Labels not direchtly castable "+str(ls[claspos]))
                         fail = True
                         break
                     data.append(ls[:claspos] + ls[claspos + 1:])
             except ValueError as Err:
                 pass
-                # print("Dataset " + dataset_name + " has bad Values.")
+                print("Dataset " + dataset_name + " has bad Values.")
+                print(Err)
             if fail: continue
         else:
+            continue
+        if len(labels)==0:
             continue
         dataset, labels = clean(data, labels)
         if dataset_name in other_outlier:
@@ -164,10 +89,7 @@ def fetch_datasets_cd_synthetic():
 
 
 def fetch_datasets_cd_uci():
-    import arff
     evaluations_directory = os.path.dirname(os.path.realpath(__file__))
-    if not evaluations_directory.endswith("evaluations"):
-        evaluations_directory = os.path.join(evaluations_directory, "evaluations")
     folder = os.path.join(evaluations_directory, "Clustering-Datasets", "01. UCI")
     datasets = {}
     for filename in os.listdir(folder):
@@ -196,7 +118,7 @@ def fetch_datasets_cd_uci():
                                 try:
                                     y = row["Class"]
                                 except KeyError:
-                                    # print("Dataset "+dataset_name+" has no Attribute Class.")
+                                    print("Dataset "+dataset_name+" has no Attribute Class.")
                                     fail = True
                                     break
                         ls = list(row)
@@ -208,16 +130,16 @@ def fetch_datasets_cd_uci():
                     try:
                         labels.append(int(ls[claspos]))
                     except ValueError:
-                        # print("Dataset "+dataset_name+" has Labels not direchtly castable "+str(ls[claspos]))
+                        print("Dataset "+dataset_name+" has Labels not direchtly castable "+str(ls[claspos]))
                         fail = True
                         break
                     data.append(ls[:claspos] + ls[claspos + 1:])
             except ValueError as Err:
-                pass
-                # print("Dataset " + dataset_name + " has bad Values.")
+                print("Dataset " + dataset_name + " has bad Values.")
+                print(Err)
             except IndexError as Err:
-                pass
-                # print("Dataset " + dataset_name + " has bad Indizes.")
+                print("Dataset " + dataset_name + " has bad Indizes.")
+                print(Err)
             data = np.array(data)
             labels = np.array(labels)
             if fail: continue
@@ -225,8 +147,13 @@ def fetch_datasets_cd_uci():
             continue
         if len(data) == 0:
             continue
-        if data.dtype.type in [np.string_, np.str_]:
-            data = data.astype(int)
+        try:
+            if data.dtype.type in [np.bytes_, np.str_]:
+                data = data.astype(int)
+        except ValueError as Err:
+            print("Dataset " + dataset_name + " has uncastable Values.")
+            print(Err)
+            continue
         if np.isnan(data).any():
             data = data[~np.isnan(data).any(axis=1)]
         dataset, labels = clean(data, labels)
@@ -235,15 +162,11 @@ def fetch_datasets_cd_uci():
 
 
 def fetch_datasets():
-    datasets = {"dbcv": fetch_datasets_dbcv()}
+    datasets = {}
     datasets["uci"] = fetch_datasets_cd_uci()
     datasets["syntetic"] = fetch_datasets_cd_synthetic()
     # datasets["ac"] = fetch_datasets_ac()
     return datasets
-
-
-def fetch_datasets_real_syn():
-    return {"real": {**fetch_datasets_dbcv(), **fetch_datasets_cd_uci()}, "synthetic": fetch_datasets_cd_synthetic()}
 
 
 def fetch_dataset(name: str):
@@ -297,5 +220,3 @@ def clean_labels(labels):
     if len(valid_indizes) != len(true_labels):
         true_labels = np.array([true_labels[x] for x in valid_indizes])
     return true_labels
-
-
