@@ -13,6 +13,7 @@ If you use our implementations in your work, please cite
 > Schlake, Georg Stefan, and Christian Beecks. 
 > "Validating Arbitrary Shaped Clusters-A Survey." 
 > 2024 IEEE 11th International Conference on Data Science and Advanced Analytics (DSAA). IEEE, 2024.
+> https://doi.org/10.1109/DSAA61799.2024.10722773
 
 Citations for all used CVIs can be found in the docstrings their respective classes.
 An example usage can be seen in `main.py`.
